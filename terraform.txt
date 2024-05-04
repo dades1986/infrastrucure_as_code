@@ -762,3 +762,146 @@ map           map(string)  pet1 = cat      map(number) dogs=3                   
 set        like list with no duplicate element
 object     complexe data structure (like class java)
 tuple       like list of different type : tuple([String, number, bool])
+
+
+ cat variables.tf 
+variable "name" {
+     type = string
+     default = "Mark"
+  
+}
+variable "number" {
+     type = bool
+     default = true
+  
+}
+variable "distance" {
+     type = number
+     default = 5
+  
+}
+variable "jedi" {
+     type = map
+     default = {
+     filename = "/root/first-jedi"
+     content = "phanius"
+     }
+  
+}
+
+variable "gender" {
+     type = list(string)
+     default = ["Male", "Female"]
+}
+variable "hard_drive" {
+     type = map
+     default = {
+          slow = "HHD"
+          fast = "SSD"
+     }
+}
+variable "users" {
+     type = set(string)
+     default = ["tom", "jerry", "pluto", "daffy", "donald", "jerry", "chip", "dale"]
+
+  
+}
+
+
+--------------------------------suite variables : default is optional-------------
+variable "filename"  {
+ default  = "/root/pets.txt"
+}
+variable "content"{
+ default  = "We love pets"
+}
+variable "prefix"  {
+ default  =  "Mrs"
+}
+variable "separator"{
+ default  =   "." 
+}
+variable "length "{
+ default  =  "1"
+}
+
+if we delete argument "default" like this :
+
+variable "filename"  {
+}
+variable "content"{
+}
+variable "prefix"  {
+}
+variable "separator"{
+}
+variable "length "{
+}
+
+when we execute terraform apply , we will be prompted to enter values for each variable used an interactive mode
+
+$>terraform apply
+
+var.content
+  Enter a value: We love Pets!
+var.filename
+  Enter a value: /root/pets.txt
+var.prefix
+  Enter a value: Mrs
+var.separator
+  Enter a value: .
+var.length
+  Enter a value: 1
+
+if we dont supply on interactive mode , then we use terraform command -var option like :
+
+$$ terraform apply -var "filename=/root/pets.txt" -var "content=We love pets!" -var "prefix=Mrs" -var "separator=." -var "length=2"
+
+*******************ENVIRMENT VARIABLES**************
+$$ export TF_VAR_filename="/root/pets.txt"
+$$ export TF_VAR_content="We love pets!"
+$$ export TF_VAR_prefix="Mrs"
+$$ export TF_VAR_separator=."
+$$ export TF_VAR_length=2"
+$$ terraform apply
+
+**********when dealing with a lot of variables use "variable definition files .tfvars or .tfvars.json"
+terraform.tfvars
+
+$$ filename = "/root/pets.txt"
+$$ content = "We love pets!"
+$$ prefix = "Mrs"
+$$ separator = "."
+$$ length = "2"
+
+A)-all files terraform.tfvars or terraform.tfvars.json or *.auto.tfvars or *.auto.tfvars.json will be automatically loaded by teraform
+B)- if you use any other filename such as variable.tfvars for example, you will have to parse it along with a command line flag called "-var-file" like this :
+$$  terraform apply -var-file variable.tfvars
+
+**********************variable definition precedence************
+
+main.tf
+resource local_file pet {
+filename= var.filename
+}
+
+variables.tf
+variable filename {
+type = string
+}
+
+$ export TF_VAR_filename="/root/cats.txt"
+
+terraform.tfvars
+filename = "root/pets.txt"
+
+variable.auto.tfvars
+filename = "root/mypet.txt"
+
+$ terraform apply -var "filename=/root/best-pet.txt"
+
+order                      option
+1                         Env variables
+2                         terraform.tfvars
+3                         *.auto.tfvars(alphbetical order)
+4                         -var or -var-file (command line flags)
