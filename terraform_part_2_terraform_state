@@ -41,7 +41,7 @@ to understand that, let us check the cotents of the configuration directory agai
 
 $ ls
 main.tf variables.tf terraform.tfstate
-terraform.tfstate : the consequence of terraform apply command (first use) that created the resource in the first place
+terraform.tfstate : the consequence of terraform apply command (first use) that created the resource in the first place : created before at least one .
 
 resource "tls_private_key" "pvtkey" {
  algorithm = "RSA"
@@ -57,3 +57,68 @@ resource "local_file" "key_details"{
  filename = "/root/key.txt"
  content  = "${tls_private_key.pvtkey.private_key_pem}"
 }
+-------
+the state file as a json data structure, that maps the
+
+real-world infrastructure resources------------<state file json>----------resource definition in the configuration file (targeted state)
+
+***************purpose of state ***********
+*terraform use stae file, to map the resource configuration (main.tf) to the real world infrastructure
+*this mapping allows terraform to create execution plans when the drift is identified between the resource configuration file (main.tf) and the state (terraform.tfstate).
+* hence, a stae file can be considered to be a "blue print" of all the resources that are for managers out there in the real world
+*when terraform creates a resource, it records its identity in the state,be  it  (que ce soit)"local file resource" that creates a file in the "machine"
+a logical resource such as th "random pet resource" which just throws out the random pet name or resources in the cloud, each resource created and managed by terraform 
+would have a unique ID which is used to identify the resources in the real world.
+
+besides the mappiing between resources and the the configuration and the real world, the state file also tracks metadata details such as "resource dependencies".
+
+* deleting dependant resources : (tracking metadata)if we delete dependant resources in the configuration file (main.tf), terraform use a stae file to delete resources depending in information in the state
+*perfermances :when dealing with the handful (petite quantité) number of resources,it may be feasible for terraform to reconcile state
+
+Terraform refresh: Reconciling real-world drift (resource crash, change inside a vm, changes due to an other conf tool like ansible...)
+Prior to a plan or apply operation, Terraform does a refresh to "update the state file with real-world status". You can also do a refresh any time with
+terraform refresh
+
+$ terraform refresh
+aws_instance.example: Refreshing state... (ID: i-011a9893eff09ede1)
+
+What Terraform is doing here is "reconciling the resources tracked by the state file" with "the real world". 
+
+It does this by querying your infrastructure "providers" to find out what's actually running and the current configuration,
+
+and "updating the state file" with this "new information". 
+
+Terraform is designed to co-exist with "other tools" as well as" manually provisioned resources" and so it only "refreshes resources under its management".
+
+The output for a refresh is minimal. Terraform lists each resource it is refreshing along with its internal ID. 
+
+Running refresh does not modify infrastructure, but does modify the state file.
+
+If the state has "drifted from the last time Terraform ran", refresh allows that drift to be "detected".
+
+By default, a backup of your state file is written to "terraform.tfstate.backup" in case the state file is" lost" or "corrupted" to simplify "recovery".
+
+Terraform stores a cache of attribute values for all resources in the state
+
+$ terraform plan --refresh=false
+
+*collaboration in the team :save state file in remote datat store, state to be shared by memebers, : hashicorp consul, terraform cloud oe aws s3
+
+*plan and apply refresh the state
+
+*********************terraform state considerations******************
+
+* Terraform state in the single source of truth for terraform to understand what is deployed in the real world
+* State is non-optional feature in Terraform
+*state file contanis sensitive information
+*it contains every little detail about our infrastructure: cpu,memory,size of disk, ip, ssh keypad--->database : initial password 
+*remote state in github, gitlab, bitbucket
+*sensitive state : aws3 , google cloud storage,azure storeage, terraform cloud
+
+
+
+
+
+
+
+
