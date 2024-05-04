@@ -98,5 +98,28 @@ plan :
 
 1-terraform drafts a plan to get the target state
 
+apply:
+1-terraform makes the necessary changes required on the target env, to bring it to the desired state
+
+A) -if for some reason the env was to shift, from the desired state, then the subsequent terraform apply will be bring it back to the desired state, by only fixing the missing component.
+
+B) -Every object that terraform manages is called a resource : compute instance, database erver in the cloud or on a physical server on premise that terraform manages.
+
+C) -Terraform manage yhe lifecycle of the resources from it's proviioning to configuration to decommissioning
+
+D)-Terraform records the state of the infrastructure as it is seen in the reel world, and based on this, it can determine what actions to take when updating resources for a particular platform
+
+E)- Terraform can ensure that the entire infrastructure is always in the defined state at all times
+
+F)- the state is a blueprint(model cible) of the infrastructure deployed by Terraform(terraform.tfstate)
+
+G)-Terraform can read attributes of existing infrastructure componenets by configuring datasources, this can later be used for configuring other resources within terraform
+
+H)-Terraform can also import other resources outside of Terraform, that either created manually or by means of other IAC tools
+and bring it under its control so that can  manage those resources going forward
+
+-----------Terraform Cloud and Terraform Entreprise------
+Terraform Cloud and Terraform Entreprise provide additinal features that allo simplified collaboration between teams managing infrastructure improved security and centralized UI to manage Terraform deployments
+All these features make Terraform an excellent entreprise grade infrastucture provisionning tool
 
 
