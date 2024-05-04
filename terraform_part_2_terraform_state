@@ -116,6 +116,24 @@ $ terraform plan --refresh=false
 *sensitive state : aws3 , google cloud storage,azure storeage, terraform cloud
 
 
+**********************terraform commands ***************
+* terraform validate : validate syntax configuration
+*terraform fmt : format canonical 
+*terraform show -json
+*terraform providers
+*terraform providers mirro /root/terraform/new_local_file
+*terraform output
+*terraform refresh : refresh the state file , not a real world
+*terraform plan
+*terraform graph (graphviz -y)
+*apt install graphviz
+*terraform graph | dot -Tsvg > graph.svg  ==>chrome
+
+apt update
+$ apt install graphviz -y
+$ terraform graph | dot -Tsvg > graph.svg
+
+
 
 
 
