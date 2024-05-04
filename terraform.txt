@@ -719,3 +719,46 @@ separator = var.separator
 length =var.length
 }
 
+*****block variables.tf***********
+
+variable "filename"  {
+ default  = "/root/pets.txt"
+ type = string
+ description = "the path of the local file"   
+}
+variable "content"{
+ default  = "We love pets"
+ type = string
+ description =  "the content of the file"
+}
+variable "prefix"  {
+ default  =  "Mrs"
+ type = string
+ description = "the preficx to be set" 
+}
+variable "separator"{
+ default  =   "." 
+ type = string
+ description =  "the seprator to be set"
+}
+variable "length "{
+ default  =  "1"
+ type = string
+ description =  "length to be set"
+}
+
+types :
+
+type           Example                                                                                       main.tf
+string         "/root/pets.txt"                                                                               var.variable_name
+number         1                                                                                               var.variable_name
+bool           true                                                                                              var.variable_name
+any            default value                                                                                      var.variable_name
+list        list(string)   ["cat",  "dog"] list(number)[1,2,3]                                                     var.prefix[0]             
+
+map           map(string)  pet1 = cat      map(number) dogs=3                                                    var.variable_name["pet1"]
+                           pet2= dog                   cats=1
+
+set        like list with no duplicate element
+object     complexe data structure (like class java)
+tuple       like list of different type : tuple([String, number, bool])
