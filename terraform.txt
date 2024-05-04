@@ -1,0 +1,102 @@
+**********Ad-hoc self scripts***
+xxxx.sh
+
+terraform :
+
+*****configuration management ***** : 
+
+1-install and manage software on existing infrastructure resources such as servers, databases, networking devices etc etc
+
+2-maintain consistent and a standard stucture of code
+
+3-easy to manage and upodate if needed
+
+4-run multiple remote resource at once
+
+5-ansible playbook or role can be checked into a version control repository
+
+6-idempotent
+
+Ansible
+puppet
+saltstack
+Chef
+
+
+*****server templating *****: 
+1-create a custom image of a virtual machine or a container
+2-images contain already all the required software and dependencies installed on them 
+3-immutuable infrastructure: once the VM ora container is deployed,it's designed to remain unchanged
+if there are changes to be made to the image, instead of updating the running instance
+like the case of configuration management tools, we update the image and re-deploy a new instance
+using the updated image
+
+
+docker
+packer
+vagrant
+
+
+*****provisioning tool *****:
+1-deploy immutable infrastructure resources(VM, databses, vpc, subnet,security group, storage) servers, databases, network xomponents etc.
+2-multiple providers : vendor agnostic : gpc, aws , azure,..
+
+
+terraform
+cloud formation
+
+-------------------------------------
+
+ON-pREMISE VsPHERE CLUSTER
+
+
+-------------providers ------
+1-how does terraform manage infrastructure on so many different kinds of platforms?----------
+2-a provider helps Terraform manage third party platforms through their API, providers enable Terraform to manage cloud platforms like AWS,GCp, azure as wellas network infrastructure like 
+BigIp
+CloudFlare
+DNS
+Palo Alto
+Infoblox
+
+as well as moitoring and data managment tools like :
+DataDog
+Grafana
+Auth0
+WaveFront
+Sumo Logic
+
+as well database like 
+
+InfluxDB
+mongoDB
+Mysql
+PostgreSql
+
+as well as version controll systems like:
+Github
+BitBucket
+Gitlab
+
+Terraform supports hundreds of such providers , and as result can work with almost every infrastructure plateform.
+
+-----------HCL: HashiCorp Configuration language------------
+1-simple declarative language
+2-block of code : resources
+3-tf extension
+
+-------phases of terraform-----
+
+main.tf (desired state)---->init,Plan , apply----->real world infrastructure (target state)
+
+
+init: 
+1-Terraform inializes the project
+2-identify the providers to be used for the target env
+
+plan :
+
+1-terraform drafts a plan to get the target state
+
+
+

@@ -1,0 +1,95 @@
+cours kubernetes :
+
+-docker swarm : docker (easy, not easy for complexe application)
+-kubernetes : google (most known, quite difficult to set up and get started, povides a lot of
+options to customize deployments, suports deployment of complexe architectures
+supported on all public cloud service providers : gcp, azure aws)
+-mesos:apache (quite difficult to set up and get started, but support many advanced features)
+
+kuberntes advantages :
+-application highly availibl as hardware failures
+car les defaillances du materiel ne permettent âs de faire tomber votre application
+parce que nous avons plusieurs examples de votre application sur les differentes noeuds
+
+le trafic des users est equilibré entre les differentes conteneurs
+
+lorsque la demande augmente, deployez un grand nombre d'instances des applications 
+
+de maniere transparente et en quelques secondes et nous avons la capacité de le faire au niveau du service lorsque nous manquons des resources materielles
+augmenter ou diminuer le nobre des noeuds sous jacents sans avoir à demonter l'application et a tout faire, de ceux ci facilement avec un ensemble de fichiers de configuration d'objets declaratifs)
+
+architecture:
+
+-noeud ouvriere: worker node=slave (minion): machine physqiue ou virtuellesur laquelle kubernetes iest installé
+
+-Master 
+
+-docker, CRI-O, RKT (roket)
+
+-kubectl : deploy in cluster, info of cluster, get nodes of cluster
+
+-DOCKER vs ContainerD : ctr , nerdctl, crictl
+
+-CONTAINER RUNTIME INTERFACE : CRI (couche des providers : vendors to work with containerization technologies like RKT, CRI-o, DOCKER)
+
+-OPEN CONTAINER Initiative (OCI) : imagespec, runtimespec
+
+-ROCKET, CRI-O : adhere OCI standards, donc sont consideres as container runtimes for kubernetes via the CRI, however Docker wasn't built to support the CRI standars, because remember,docker was built 
+before CRI was introduced and Docker still was the dominant container tool used by most,
+so kubernetes had to continue to support Docker as well, so Kuberenetes introduced what is known as 
+"DOCKER SHIM" which was a hacky [) not elegant (= simple in a way that shows skill and care), although it may solve a problem effectively:temporary way to continue to support Docker outside of CRI ]
+
+-SO DOCKER is not just a container runtime alone: docker consists of multiple tools that are put together : CLI, API, BUILD, VOLUMES, AUTH, SECURITY, Container Runtime (RUN C) , DAEMON that managed RUN C =ContainerD
+
+==>SO CONTAINERD is CRI compatible and can work directly with Kubernetes as all other runtimes
+==>So containerD can be used as a runtime on its own separate from DOCKER.
+so now you have conteinerD as a separate runtime and Docker separately,
+Do kubernetes continued to maintain support for Docker engine directly
+but having to maintain the docker SHIM was an unnecessary effort and added complications,
+so it was decided in kubernetes version 1.24 rlease to remove DOCKERSHIM completly,
+so support for DOCKER was removed
+
+all he images that were built before docker was removed continue to work
+because Docker followed the image spec from the oci standard, so all the images built by docker follow the stahdard, they continue to work with the container ID, but docker itself was removed as a supported runtime from kubernetes
+
+
+APIService
+CertificateSigningRequest
+CronJob
+CSIDriver
+CSINode
+CustomResourceDefinition
+DaemonSet
+Deployment
+FlowSchema
+HorizontalPodAutoscaler
+Ingress
+IngressClass
+NetworkPolicy
+PodDisruptionBudget
+PersistentVolume
+PersistentVolumeClaim
+PriorityLevelConfiguration
+VolumeAttachment
+StorageVersion
+SubjectAccessReview
+
+rolling updates : upgrade pod by pod , not all on one time
+rool back 
+multiple chagnges to envirement such as : 
+upgrading underlying web server version
+scaling 
+modifing resources allocation
+
+-Rollout and Versioning 
+-quand on cree un deployment ==>trigger a rolout==>new rollout creates a new deployment revision1
+2 strategies : Recreate vs rolling update (defeult 
+
+
+
+
+
+
+
+
+

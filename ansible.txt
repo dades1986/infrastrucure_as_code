@@ -1,0 +1,368 @@
+provisioning
+configuration management
+continuous dilevery
+application deployment
+securiy and audits compliance
+
+*simple
+*powerful
+*agentless
+
+orchestration tool : inventory file /etc/ansible (default): yaml, servers, group of server, 
+
+web ansible_host=server1.company.com  ansible_connection=ssh ansible_user=root
+db ansible_host=server2.company.com  ansible_connection=winrm ansible_user=admin
+mail ansible_host=server3.company.com ansible_connection=ssh  ansible_password=P@#
+web2 ansible_host=server4.company.com ansible_connection=winrm
+
+inventory parameters :
+
+ansible_host
+ansible_connection -ssh/winrm/localhost
+ansible_port - 22/5986
+ansible_user - root/administrator
+ansible_ssh_pass -password
+
+localhost ansible_connection=localhost
+
+set up SSH key-based passwordless authentication between servers instead putting a password (vault) .
+
+inventory format :
+
+petite entreprise : ini format
+grande entreprise : yaml format
+
+
+student-node
+node01 
+User: bob
+Password: caleston123
+
+node02 :- 
+
+
+User: bob
+Password: caleston123
+
+Note: Please type exit or logout on the terminal or press CTRL + d to log out from a specific node.
+
+Note: For Linux based hosts, use ansible_ssh_pass parameter and for Windows based hosts, use ansible_password parameter.
+
+
+# Sample Inventory File : ini format
+  
+# Web Servers
+web1 ansible_host=server1.company.com ansible_connection=ssh ansible_user=root ansible_ssh_pass=Password123!
+web2 ansible_host=server2.company.com ansible_connection=ssh ansible_user=root ansible_ssh_pass=Password123!
+web3 ansible_host=server3.company.com ansible_connection=ssh ansible_user=root ansible_ssh_pass=Password123!
+
+# Database Servers
+db1 ansible_host=server4.company.com ansible_connection=winrm ansible_user=administrator ansible_password=Password123!
+
+[all_servers:children]
+web_servers
+db_servers
+
+[web_servers]
+web1
+web2
+web3
+
+[db_servers]
+db1
+
+
+# Sample Inventory File : yaml format
+
+all:
+ children:
+  webservers:
+     children:
+	  webservers_us:
+	   hosts:
+	    server1_us.com:
+		 ansible_host: 192.168.8.101
+		 
+		 server2_us.com:
+		 ansible_host: 192.168.8.102 
+      webservers_us:
+	   hosts:
+	    server1_eu.com:
+		 ansible_host: 192.168.8.101
+		 
+		 server2_eu.com:
+		 ansible_host: 192.168.8.102
+		 
+* variables: (sample playbook.yml)
+
+-
+ name: Add DNS to resolv.conf
+ hosts: localhost
+  vars:
+   dns_server:10.1.250.10
+  tasks:
+   - linefile:
+      path: /etc/resolv.conf
+	  line: 'nameserver 10.1.250.10'
+	 
+	 
+	  
+* variables: (variable in seprate file variables)
+
+variable1: value1
+variable2: value2
+
+
+
+-
+ name: Add DNS to resolv.conf
+ hosts: localhost
+  vars:
+   dns_server:10.1.250.10
+  tasks:
+   - linefile:
+      path: /etc/resolv.conf
+	  line: 'nameserver {{dns_server}}'
+	  
+	  
+* another example:
+
+
+-
+ name: Set Firewall configrations
+ hosts: web
+  vars:
+   dns_server:10.1.250.10
+  tasks:
+   - firewalld:
+      service: https
+	  permanent: true
+	  state: enabled
+   - firewalld:
+      port: 8081/tcp
+	  permanent: true
+	  state: disabled
+   - firewalld:
+      port: 161-162/udp
+	  permanent: true
+	  state: enabled
+   - firewalld:
+      source: 192.0.2.0/24
+	  zone: internal
+	  state: enabled
+	
+
+JINJA2-templating:
+source: {{ inter_ip_range }} XXXXX
+source: '{{ inter_ip_range }}' VVVVV
+source: Something{{ inter_ip_range }} Something VVVVV
+	
+#samplke inventory file
+ web http_port=8081 snmp_port=160-162 inter_ip_range=192.0.2.0
+ 
+ 
+ -
+ name: Set Firewall configrations
+ hosts: web
+  vars:
+   dns_server:10.1.250.10
+  tasks:
+   - firewalld:
+      service: https
+	  permanent: true
+	  state: enabled
+   - firewalld:
+      port: '{{http_port}}'
+	  permanent: true
+	  state: disabled
+   - firewalld:
+      port: '{{snmp_port}}'/udp
+	  permanent: true
+	  state: enabled
+   - firewalld:
+      source: '{{inter_ip_range}}'/24
+	  zone: internal
+	  state: enabled
+  
+#Sample variable file (web.yaml)
+http_port=8081 
+snmp_port=160-162 
+inter_ip_range=192.0.2.0
+
+*String variables: "admin"
+*True Boolean variables: True, 'true', 't', 'yes', 'y', 'on', '1', 1,1.0
+*False Boolean variables: False, 'false', 'f', 'no', 'n', 'off', '0', 0,0.0
+*Integer variables: 10 10.6 
+*list variables: 
+
+packages:
+ - nginx
+ - postgresql
+ - git
+ 
+loop: "{{packages}}"
+msg: "The first package is {{packages[0]}}"
+
+*Dictionary variables: 
+
+user:
+ name: "admin"
+ password: "secret"
+ 
+msg: "Username: {{user.name}}, Password: {{user.password}}"
+
+****Registering variables and variable precedence****
+
+/etc/ansible/hosts
+
+web1 ansible_host=172.20.1.100
+web2 ansible_host=172.20.1.101
+web3 ansible_host=172.20.1.102
+
+[web-servers]
+web1
+web2
+web3
+
+
+[web_servers:vars]
+dns_server=10.5.5.3
+
+|--------------------|
+| dns_server=10.5.5.3|
+|                    |
+|   web1             |
+|--------------------
+
+|--------------------|
+| dns_server=10.5.5.3|
+|                    |
+|     web2           |
+|--------------------
+
+|--------------------|
+| dns_server=10.5.5.3|
+|                    |
+|       web3         |
+|--------------------
+
+
+**************************************
+
+web1 ansible_host=172.20.1.100
+web2 ansible_host=172.20.1.101 dns_server=10.5.5.4
+web3 ansible_host=172.20.1.102
+
+[web-servers]
+web1
+web2
+web3
+
+
+[web_servers:vars]
+dns_server=10.5.5.3
+
+|--------------------|
+| dns_server=10.5.5.3|
+|                    |
+|   web1             |
+|--------------------
+
+|--------------------|
+| dns_server=10.5.5.4|
+|                    |
+|     web2           |
+|--------------------
+
+|--------------------|
+| dns_server=10.5.5.3|
+|                    |
+|       web3         |
+|--------------------
+
+-first associate group variable , then associate host variable
+* host variable take precedence over variable variable
+
+
+
+ -
+ name: Configure DNS Server
+ hosts: all
+  vars:
+   dns_server:10.5.5.5
+  tasks:
+   - nsupdate:
+      server: '{{dns_server}}'
+
+|--------------------|
+| dns_server=10.5.5.5|
+|                    |
+|   web1             |
+|--------------------
+
+|--------------------|
+| dns_server=10.5.5.5|
+|                    |
+|     web2           |
+|--------------------
+
+|--------------------|
+| dns_server=10.5.5.5|
+|                    |
+|       web3         |
+|--------------------
+
+$ ansible-playbook playbook.yml --extra-vars "dns_server=10.5.5.6"
+
+|--------------------|
+| dns_server=10.5.5.6|
+|                    |
+|   web1             |
+|--------------------
+
+|--------------------|
+| dns_server=10.5.5.6|
+|                    |
+|     web2           |
+|--------------------
+
+|--------------------|
+| dns_server=10.5.5.6|
+|                    |
+|       web3         |
+|--------------------
+
+
+
+
+1-GROUP Vars
+2-Host vars
+3-Play Vars
+4-extra Vars
+
+
+resume :
+
+1-comman line value (-u my_ser not variables)
+2-Role Default (defined in role/defaults/main.yml)
+3-Inventory file or script group vars
+4-inventory group_vars/all
+5-playbook group_vars/all
+6-inventory group_vars/*
+7-playbook group_vars/*
+8-inventory file or script host vars
+9-inventory host_vars/*
+10-playbook host_vars/*
+11-host facts /cached set_facts
+12-play vars
+13- play vars_prompt
+14-play vars_files
+15-role vars (defined in role/vars/main.yml)
+16-block vars (only for tasks in block)
+17-task vars (only for the task)
+18-include_vars
+19-set_facts /registered vars
+20-role(and include_role) params
+21-include params
+22-extra vars (-e "user=my_user") (always win a precedence)
+
