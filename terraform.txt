@@ -597,4 +597,63 @@ local_file.pet: Destruction complete after 0s
   ],
   "check_results": null
 }
----------------------------
+--------terraform providers : plugin-based architecture : infrastructure plugins in terraform registry at registry.terraform.io----
+terraform init : plugins for cloud : aws, google, azure , local
+
+official : aws, google, azure , local : official
+partner : bigip, heroku, digitalocean : third partner
+community : activedirectory, ucloud, netapp-gcp :individual contributors and Hashicorp community 
+
+$ ls /root/terraform-local-file/.terraform plugins
+
+name of the plugin : host_name/organizational_namespace/type
+example : registery.terraform.io/hashicorp/local
+by default hostname = registery.terraform.io
+
+****************configuration directory***************
+------naming convention --------:
+
+A)===>one file
+
+----$ ls /root/terraform-local-file
+local.tf : 
+reource "local_file" "pet" {
+filename = "/root/pets.txt"
+content = "We love pets!"
+}
+
+B)===>two files 
+----$ ls /root/terraform-local-file
+local.tf : 
+reource "local_file" "pet" {
+filename = "/root/pets.txt"
+content = "We love pets!"
+}
+
+cat.tf :
+reource "local_file" "cat" {
+filename = "/root/cat.txt"
+content = "My favorite pet is a cat!"
+}
+
+C)===>one filecontainig all configs
+
+main.tf :
+reource "local_file" "pet" {
+filename = "/root/pets.txt"
+content = "We love pets!"
+}
+reource "local_file" "cat" {
+filename = "/root/cat.txt"
+content = "My favorite pet is a cat!"
+}
+
+D)===>many configuration files
+main.tf : main configuration file containing resource definition
+variables.tf :contains variable declaration
+outputs.tf : contains outputs from resources
+provider.tf : contain provider definition
+
+
+
+
