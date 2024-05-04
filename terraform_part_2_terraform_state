@@ -1,1 +1,59 @@
 
+************terraform state*********
+
+$ ls terraform-local-file
+main.tf  variables.tf
+
+******main.tf********
+resource "local_file" "pet" {
+filename = var.filename
+content = var.content
+}
+
+******variables.tf********
+
+variable "filename"{
+ default = "/root/pets.txt"
+}
+
+variable "content" {
+ default = "I love pets!"
+}
+
+$ cd   terraform-local-file
+$ terraform init : create plugins
+$terraform plan: terraform try to refresh the state in-memory prior to the plan, since the first time 
+we are runing the terraform plan command, there will be no details related to a state printed
+therfore impliyin that there is no state recorded at this moment in time, from this , terraform also understand  that 
+currently there are no resources provisioned based on the configuration files, and then creates an "execution plan" of create
+
+$ terraform apply : this command try also refresh the in-memory state, finds that there is no state recorded at the moment
+and proceeds to create an aexecution plan, once confirmed "yes", terraform creates the local file resource as expected,
+terraform creates a unique id
+
+$ cat /root/oets.txt
+I love pets!
+
+$ terraform apply again :Terraform knows that a local file and the same id that we just saw already exists
+and it takes no further action, so how does terraform know that?
+how does it know that the local file resource already exists?
+to understand that, let us check the cotents of the configuration directory again
+
+$ ls
+main.tf variables.tf terraform.tfstate
+terraform.tfstate : the consequence of terraform apply command (first use) that created the resource in the first place
+
+resource "tls_private_key" "pvtkey" {
+ algorithm = "RSA"
+ rsa_bits  = "4096"
+}
+-----------------------------------------------------
+resource "tls_private_key" "pvtkey" {
+ algorithm = "RSA"
+ rsa_bits  = "4096"
+}
+
+resource "local_file" "key_details"{
+ filename = "/root/key.txt"
+ content  = "${tls_private_key.pvtkey.private_key_pem}"
+}
