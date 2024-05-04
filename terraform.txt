@@ -915,3 +915,35 @@ drwxr-xr-x 3 root root 4096 May  4 16:31 .terraform/
 -rw-r--r-- 1 root root   79 May  2 16:30 main.tf
 -rw-r--r-- 1 root root   31 May  2 16:30 terraform.tfvars       ----->premier
 -rw-r--r-- 1 root root   31 May  2 16:30 throw.auto.tfvars ------->3eme 
+
+
+***********************resourceattribute ************ generated after "terraform apply" 
+
+**************main.tf****************
+resource "local_file" "pet" {
+filename = var.filename
+content = var.content
+}
+
+resource "random_pet" "my-pet" {
+prefix = var.prefix
+separator = var.separator
+length =var.length
+}
+
+$ terraform apply
+
+like : random_pet.my-pet: creation complete after 0 s [id=Mr.bull] ==>we can use this attribute like id :
+
+**************main.tf****************
+resource "local_file" "pet" {
+filename = var.filename
+content = "My favorite pet is ${randem_pet.my-pet.id}  <<<<<<<<<< expression attribute resource_type.resource_name.attribute
+}
+
+resource "random_pet" "my-pet" {
+prefix = var.prefix
+separator = var.separator
+length =var.length
+}
+
