@@ -1002,3 +1002,5 @@ $ terraform output pet-name
 Mrs.gibbon
 1-serve toi show variable on the screen
 2-feed the output variables to other iac tools like ansible playbook or ad-hoc scripts for configuration management and testing
+
+
