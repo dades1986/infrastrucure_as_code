@@ -905,3 +905,13 @@ order                      option
 2                         terraform.tfvars
 3                         *.auto.tfvars(alphbetical order)
 4                         -var or -var-file (command line flags)
+
+
+drwxr-xr-x 3 root root 4096 May  4 16:31 ./
+drwxr-xr-x 3 root root 4096 May  4 16:28 ../
+drwxr-xr-x 3 root root 4096 May  4 16:31 .terraform/
+-rw-r--r-- 1 root root 1153 May  4 16:31 .terraform.lock.hcl
+-rw-r--r-- 1 root root   33 May  2 16:30 basket.auto.tfvars  --->deuxieme car ordre alphabetique basket << throw
+-rw-r--r-- 1 root root   79 May  2 16:30 main.tf
+-rw-r--r-- 1 root root   31 May  2 16:30 terraform.tfvars       ----->premier
+-rw-r--r-- 1 root root   31 May  2 16:30 throw.auto.tfvars ------->3eme 
