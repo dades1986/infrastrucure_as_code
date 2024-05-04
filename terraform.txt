@@ -678,5 +678,44 @@ separator = "."
 length = "5"
 }
 
+***************************inputs variables****************
+argument               value
+filename              "/root/pets.txt"   
+content                "We love pets" 
+prefix                 "Mrs"
+separator                "." 
+length                 "1"
 
+1-hardcoded value is not a goood idea  cause this limits the reusability of the code which defetas the purpose of using IAC
+2-we want to be ure that code will be reused again and again to deploy resources "BASED ON" a set of input variables that can be provided during the "EXECUTION"
+
+*****variables.tf***********
+
+variable "filename"  {
+ default  = "/root/pets.txt"
+}
+variable "content"{
+ default  = "We love pets"
+}
+variable "prefix"  {
+ default  =  "Mrs"
+}
+variable "separator"{
+ default  =   "." 
+}
+variable "length "{
+ default  =  "1"
+}
+
+**************main.tf****************
+resource "local_file" "pet" {
+filename = var.filename
+content = var.content
+}
+
+resource "random_pet" "my-pet" {
+prefix = var.prefix
+separator = var.separator
+length =var.length
+}
 
