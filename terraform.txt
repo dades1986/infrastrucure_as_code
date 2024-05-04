@@ -654,6 +654,29 @@ variables.tf :contains variable declaration
 outputs.tf : contains outputs from resources
 provider.tf : contain provider definition
 
+******************multiple providers ******************
+*****Random resource to create a random resource *******
+The resources available in random provider are
+Resources
+
+random_id
+random_integer
+random_password
+random_pet
+random_shuffle
+random_string
+random_uuid
+**************main.tf****************
+resource "local_file" "pet" {
+filename = "/root/pets.txt"
+content = "We love pets!"
+}
+
+resource "random_pet" "my-pet" {
+prefix = "Mrs"
+separator = "."
+length = "5"
+}
 
 
 
