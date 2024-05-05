@@ -135,6 +135,87 @@ $ terraform graph | dot -Tsvg > graph.svg
 
 
 
+********************mutable Vs Immutable Infrastructure****************
+
+
+* in-place update :
+
+*when terraform updates a resources , such as updating the permissions of a local file, it first festroys it and then recreate it with new permission
+why terraform do that ?
+
+consider an application server running NGINX with the version of 1.17
+when a new version of NGINX is released, we upgrade the software running on this web server
+first from v1.17 to v1.18, and eventually, when a new version v1.19 is released, we upgraded the same way from v1.18 to v1.19
+this can be done using a number of different ways, one simple approch is to download the desired version of NGINX
+and then use it to manually upgrade the software on the web server, during a maintenance window.
+of course , we can also make use of tools such as ad-hoc scripts,or configuration management tools such as Ansible to achiene this.
+
+for  high availibility, instead of relying on one web server, we can have a pool of theses web servers all runing the same software and code.(1.17, 1.17, 1.17)
+we would have to use the same software upgrade lifecycle for each of the servers, using the same approach that we use for the first web server.
+this type of update is known as "in-place update".and this because the underlying infrastructure remains the same
+but the software and the configuration on these servers are changed as part of the update. and here is an examlpe of a mutable infrastructure.
+
+*********************** "configuration drift"*************
+
+updating software on a system can be a complex task,and in almost all cases, there are bound to be a set of dependencies
+that have to be met before an upgrade can be carried out successfully.
+
+let us assume that web server 1 and web server 2 have every dependency met, while we try to upgrade the version from 1.18 to 1.19
+as a result, these two servers are upgraded without any issues. web server 3 in the other hand , does not .
+the upgrade fails on web server 3 becasue a few dependancies that are not met, and as a result, it remains at version 1.18 (1.19, 1.19,1.18)
+a failure in upgrade could be because of a number of reasons :
+-network issues impacting the connectivity to the software repository
+-file system full
+-or different version  of operating system running on the web server 3, as compared to the other two.
+
+over time, with multiple updates and changes to this pool of three servers, there is a possibility that each of the servers vary from another
+may be in software, or configuration or operating system etc, this is known as a "configuration drift"
+
+****************immutable infastructure**********************
+
+this configuration drift, can leave the infrastructure in a complex state. making it difficult to plan and carry out subsequent updates
+troubleshooting issues would also be a difficult task as each server would behave slightly differently from the other because of this configuration drift.
+
+Instead of updating the software versions on the web servers, we can spin up a new web servers with the updated software version
+and then delete the old web server ( avoir 4 dans cet exemple , ensuite enlever l'ancien : remplacement)
+
+so when we want to update NGINX 1.17 to 1.18, a new server is provisioned with 1.18 version of NGINX, if the upgrade goes through, then the old web server is deleted.
+that's called immutable infrastructure, immutable means unchanged or something that you can not change.
+as a consequence, with the immutable infrastructure, we can not carry out "in-place" updates of the resources anymore
+this doesn't mean that updating web servers this way will not lead to failures, if the upgrade fails for any reason,
+the old web server will left intact and the failed server will be removed, as result we do not leave much room for configuration drit to occur between our servers
+ensuring that it is left in a simple easy-to-understand state.
+
+Since we are working with the infrastructure as code, immutability makes it easier to version the infrastructure and to roll back and roll farward between versions.
+Terraform as an infrastructure provisionning tool uses this approach
+
+resource "local_file" "pet" {
+filename = "/root/pets.txt"
+content = "we love pets"
+file_permission (added one) = "0700"   777-->700
+}
+
+$ terraform apply
+
+original file with the permission 777  "/root/pets.txt" to be deleted and a new file  "/root/pets.txt" to be created with the new permission 700.
+By default, terraform destroys the resource first , before creatin a new one in its place.
+
+but if we want the resource to be created first before the old one is deleted or to ignore deletion completely, how do we do that?
+these can be done by making use of lifecycle rules in our resource block. and we will see how to do that next.
+
+
+
+resumé: mutable infrastructure <--------> configuration drift
+        immutable infrastructure <-------> no configuration drift
+
+
+
+
+
+
+
+
+
 
 
 
