@@ -29,4 +29,7 @@ version = "> 1.2.0, < 2.0.0, != 1.4.0"
 version = "~> 1.2" pessimistic constraint operator : the specific version or availiblee increment version based on the value we provided
 1.2 ,1.3 , 1.4, .....until 1.9
 
+!=  ~> <= >=  : are valid
+== is not valid
+
 version = "~> 1.2.0"  1.2.1 1.2.2........1.2.9
