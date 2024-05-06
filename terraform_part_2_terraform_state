@@ -356,3 +356,5 @@ reource "local_file" "pet" {
 resumé : count : resources are identified by index pet[0], pet[1]....
          foreach : resources are identified by keys "/root/dogs.txt", "/root/cats.txt" ... cause map or set
 
+there are many other meta-arguments in terraform such as : provisioners, providers, backends etc etc
+
