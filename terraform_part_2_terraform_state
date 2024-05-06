@@ -209,11 +209,45 @@ resumé: mutable infrastructure <--------> configuration drift
         immutable infrastructure <-------> no configuration drift
 
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+*************lifecycle rules ******************
 
+it frees the infrastructure to be immutable, 
 
+resource "local_file" "pet" {
+filename = "/root/pets.txt"
+content = "we love pets"
+file_permission (added one) = "0700"   777-->700
 
+***********************************************************************************
+resource "aws_instance" "example" {
+  # Resource configuration...
+  
+  lifecycle {
+    # Prevent this resource from being destroyed (deleted)
+    prevent_destroy = true
+    
+    # Ignore changes to certain "attributes" when determining if an update is required
+    ignore_changes = ["tags"]
+    
+    # Define custom create_before_destroy behavior
+    create_before_destroy = true
+  }
+}
+**************************************************************************************
 
+*************data source : used by terraform on read mode******************
+
+non managed resource : resource created manually or using another iac tool different of terraform
+
+❯ cat main.tf 
+output "os-version" {
+  value = data.local_file.content
+}
+data "local_file" "os" { // an existing file 
+  filename = "/etc/os-release"
+}
 
 
 
