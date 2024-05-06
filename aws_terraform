@@ -140,7 +140,7 @@ Once this role is attached to an EC2 instance created in the account, that insta
 ===>IAM Roles are not restricted to just providing access from one service to another in aws
 ===>other uses of IAM ROLES include providing access to an another "IAM User belonging to another AWS Account"
 ====>providing access to applications to interacct with services in AWS 
-=====>providing access to users managed outside aws : example access to users of an organization that uses Active Directory
+=====>providing access to users managed outside aws : example access to users of an organization that uses Active Directory : "aws service", "another aws account","web identity", "SAML 2.0 federation"
 ====>besides aws managed policies, we can also create a custom policies for own
 
 Example :
@@ -160,6 +160,55 @@ we can do it this way :
         }
     ]
 }
+
+===>un like the other services , IAM service is independant from the region (Region is set to Global), once we create USER or Group IAM, it will be availible in all regions in the account.
+===>>create user ===>progammatic access vs aws management console access
+===>for management console access, we need console password :
+             ------autogenarated password
+             ------custom passord
+-----allow user to reset his password
+===>with this enabled , users will be automaticaly attached to IAM policy that will allow them to reset their own password.
+===>next permissions ====>add user to group, copy permissions from an existing user, attach existing policies diectly
+===>add tags
+===>create user
+==>downlaod csv : access key id + secret access key
+
+resume : IAM policies can be attached to USER, GROUP and ROLE.
+
+******************programmatic access"*****************************************
+* AWS CLI tool to interact with aws services programmatically.
+---------$ aws --version
+---------$ aws configure
+          Aws Access key ID [None]: downloaded from the management console for the user
+          Aws Secret Access Key [None]: downloaded from the management console for the user
+          Default region name [None]:us-west-2
+          Default output format [None]:json yam txt ...
+---------$ cat  .aws/config/credentials
+[default]
+aws_access_key_id =cccccccccccccccc
+aws_scret_access= cccccccccccccc
+---------$ cat  .aws/config/config
+[default]
+region =s-west-2
+output= text
+
+************syntax********
+$ aws <command> <sub-command> [options and parameters]
+$ aws iam        create-user   __user-name lucy
+
+{
+    "User": {
+        "Path": "/",
+        "UserName": "lucy",
+        "UserId": "ABCDEFGHIJKLMNOPQRSTU",
+        "Arn": "arn:aws:iam::123456789012:user/lucy",
+        "CreateDate": "2024-05-05T12:34:56Z"
+    }
+}
+
+$ aws help
+$ aws iama help
+$aws iam create-user help
 
 
 
