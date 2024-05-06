@@ -1,1 +1,165 @@
 
+create aws account
+===>ROOT ACCOUNT : e.oumina@gmail.com , password = password
+====>connect to AWS management console using the same credentilas
+====>this email is called root account, and has a complete administrative privileges
+====>we can manage any service within AWS using the root account
+
+/!\ ===>but this is not the recommended approach.
+
+====>this user account can be compared to the root user in linux and admin in windows , which have a complete administrative privileges to carry out any task in the operating system.
+=====>Just like the root or admin user, youshould not rely on the root account as your daily driver to operate your aws account.
+======>when your aws account is just set up, this is the only account you can use  to sign into the management console.
+======>however, using the root account, we can create new users and assign them appropriate privileges.
+======>that should be the only puropse of using the root account
+=======>Once these users have been created, lock away the root account credentials securely and do not use it unless it's absolutely necessary.
+==>to start off, let us create a few new users called Lucy, Max, Abdul, Lee
+====>when we create users in AWS, there are two types of access that we can configure
+    1- access to the management using username and password
+    2-programatic access using Access_key_id and Secret_access_key $ aws s3api create-bucket  -bucket my_bucket -regionn us-east-1
+
+====>to do this , we create an access Id and secret access key, which need to be configured on the CLI 
+
+===>before we can start making use of the terminal to connect to AWS
+
+
+===> how to assign permissions to those users
+===>as standard, when a user is just created, aws assigns least privilege permission to the user, what user can or cannot do in aws is decided by the permissions that are defined whinin an "IAM POLICY"
+
+Example : let's assume that Lucy is a technical lead for a project that will be deployed in AWS, which is the reason why the aws account was created
+she needs to have  :
+1-admin access to all services and resources in aws: to do this we can add an IAM policy (json format) called "administrator" : administratorAccess
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "*",
+            "Resource": "*"
+        }
+    ]
+}
+
+===>the administrator access policy is an aws managed policy
+
+example of iam policies by job :
+
+   job---------------------------------------------------------------policy name
+Administrator                                                         Administrator
+Billing                                                                Billing
+Database Administrator                                                 DatabaseAdministrator
+Network administrator                                                   NetworkAdministrator
+View-Only user                                                          ViewOnlyAccess
+
+for the other users :
+
+Max, Abdul, Lee   ok_only_for  AmazonEc2FullAccess and  Amazons3FullAccess
+Max, Abdul, Lee   not_ok_for_other_then  AmazonEc2FullAccess and  Amazons3FullAccess
+
+===> to do this , we can create two managed policies , and associate it to each user 
+
+Max ------->AmazonEc2FullAccess
+    |------->Amazons3FullAccess
+
+Abdul ------->AmazonEc2FullAccess
+    |------->Amazons3FullAccess
+
+Lee ------->AmazonEc2FullAccess
+    |------->Amazons3FullAccess
+
+====>Better yet, since Max , abdul and Lee are part of the same team, and have the same permission, we can add them to a group called "DEVELOPPER" :
+
+IAM GROUP <----------------------------------------->GEVELOPPER GROUP
+          |---->AmazonEc2FullAccess                                 |------------------------>Max
+          |----->Amazons3FullAccess                                 |------------------------>Abdul
+                                                                    |------------------------->Lee
+==>IAM Group is a collection of users, this allows us to specify permissions to multiple users at once.this way, we can directly attach the policies to the the group rather then having to assign them to individual users.
+
+To create an IAM group named "DEVELOPPER GROUP" with two users ("Max" and "Abdul") and assign them the permissions AmazonEC2FullAccess and AmazonS3FullAccess, respectively, you can follow these steps:
+
+1-Create the IAM Group: json
+
+{
+  "GroupName": "DEVELOPPER GROUP"
+}
+
+2-Attach Policies to the Group:
+
+{
+  "GroupName": "DEVELOPPER GROUP",
+  "PolicyArn": "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+}
+
+{
+  "GroupName": "DEVELOPPER GROUP",
+  "PolicyArn": "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+3-Create IAM Users:
+
+{
+  "UserName": "Max"
+}
+
+{
+  "UserName": "Abdul"
+}
+4- Add Users to the Group:
+
+{
+  "GroupName": "DEVELOPPER GROUP",
+  "UserName": "Max"
+}
+
+{
+  "GroupName": "DEVELOPPER GROUP",
+  "UserName": "Abdul"
+}
+After following these steps, the group "DEVELOPPER GROUP" will have two users ("Max" and "Abdul"), and each user will have the respective permissions of AmazonEC2FullAccess and AmazonS3FullAccess attached to them.
+
+
+the access provided so far been for humans. people who either want to carry out tasks using the management console or programmatically by  making use of the access key ID and the secret access keys.
+
+===>Until now, we have seen how to create users, groups and attach policies to them in AWS. But what about other services?
+
+===>say an EC2 instance wants to read from and write data to an S3 bucket. would that work out of the box? NOOOOO
+
+===>just like a regular users, resources in AWS also do not have any permission to interact with other services by default, they need to be granted access specifically
+===>however, unlike regular users, we can not attach an IAM policy to a service directly, instead in order to allow an EC2 instance to be able to interact with s3 buckets, we have to create a role.
+An IAM role allows us to securely grant access to an AWS service to act on other services in the account
+
+RESUME: 
+users<---------------->attach directly IAM policies 
+services (EC2,s3.....> <---->we can not attach IAM policicies
+
+ IAM policy AmazonFullAccess ----->S3 Access ROLE------->Attach role to EC2------>instance of EC2 have complete access to s3 service.
+
+example : let's call it "S3 access role"  to be applied on the EC2 service. with this role , we can attach the same IAM policy called AmazonS3FullAccess that we use for the developper group.
+Once this role is attached to an EC2 instance created in the account, that instance should have complete access to the s3 service
+
+===>IAM Roles are not restricted to just providing access from one service to another in aws
+===>other uses of IAM ROLES include providing access to an another "IAM User belonging to another AWS Account"
+====>providing access to applications to interacct with services in AWS 
+=====>providing access to users managed outside aws : example access to users of an organization that uses Active Directory
+====>besides aws managed policies, we can also create a custom policies for own
+
+Example :
+if you xant to create an aws policy that will grant permissions for a user to create and delete tags on EC2
+we can do it this way :
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action":[
+              "ec2:DeleteTags",
+              "ec2:createTags"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+
+
