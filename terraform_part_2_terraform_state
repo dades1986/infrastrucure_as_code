@@ -249,9 +249,110 @@ data "local_file" "os" { // an existing file
   filename = "/etc/os-release"
 }
 
+********************************************meta-arguments :change the behavior of the resource example depends_on, lifecycle ... *************
 
 
 
+reource "local_file" "pet" {
+  filenamle = var.filename
+  content = var.content
+  depends_on = [
+     random_pet.my-pet
+  ]
+}
+
+reource "random_pet" "my-pet" {
+  prefix = var.filename
+  separator = var.separator
+  length    = var.length
+}
+
+reource "local_file" "pet" {
+  filenamle = "/root/pets.txt"
+  content = "We love pets!"
+file_permission = "0700"
+  lifecycle = [
+     create_before_destroy = true
+  ]
+}
+
+let's see more meta-arguments for iterate to create many resources: create many resources of the same type
 
 
+-------create_files.sh-------
+for i in {1..3}
+   do 
+   touch /root/pet{i}
+    done
+--------
+main.tf 
+
+meta-argument : Count 
+reource "local_file" "pet" {
+  filenamle = var.filename
+   count  = 3
+}
+ variables.tf
+variable "filename" {
+  default = "/root/pets.txt"
+}
+
+
+variables.tf
+variable "filename" {
+  default = [
+       "/root/pets.txt"
+       "/root/dogs.txt"
+        "/root/cats.txt"
+}
+
+reource "local_file" "pet" {
+  filenamle = var.filename[count.index]
+   count  = 3
+}
+
+
+-----
+reource "local_file" "pet" {
+  filenamle = var.filename[count.index]
+   count  = length(var.filename)
+}
+
+****undiserable results when updating them, for example deletin,g a file at position 0*****
+variable "filename" {
+  default = [
+       //resource deleted!!!
+       "/root/dogs.txt"
+        "/root/cats.txt"
+}
+
+********************meta-arguments : for-each : working only for map and set not with LIST**********************
+
+reource "local_file" "pet" {
+  filenamle = each.value
+   for_each  = var.filename
+}
+
+variable "filename" {
+  type=set(string)
+  default = [
+       "/root/dogs.txt"
+        "/root/cats.txt"
+}
+
+*******or ********
+variable "filename" {
+type=list(string)
+  default = [
+       "/root/dogs.txt"
+        "/root/cats.txt"
+}
+
+reource "local_file" "pet" {
+  filenamle = each.value
+   for_each  = toset(var.filename)
+}
+
+resumé : count : resources are identified by index pet[0], pet[1]....
+         foreach : resources are identified by keys "/root/dogs.txt", "/root/cats.txt" ... cause map or set
 
